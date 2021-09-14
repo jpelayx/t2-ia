@@ -1,7 +1,6 @@
 import random
 import sys
 import math
-from queue import Queue
 
 sys.path.insert(0, '../')
 from board import *
@@ -12,7 +11,7 @@ class Node(object):
         self.move = move
         self.color = color
         self.cost = cost
-        self.children = Queue()
+        self.children = []
     
     def get_cost(self):
         return self.cost
@@ -31,28 +30,27 @@ class Node(object):
     
     def get_child_with_value(self, value):
         cs = self.get_children()
-        if cs.qsize() == 0:
-            return
-        for c in range(cs.qsize()):
-            child = cs.get(c)
-            if child.get_cost() == value:
-                return child 
+        if len(cs) == 0:
+            return None
+        for c in cs:
+            if c.get_cost() == value:
+                return c 
+        return None
         
     def get_color(self):
         return self.color
 
     def add_child(self, new_child):
-        self.children.put(new_child)
+        self.children.append(new_child)
 
 
 # Nao esqueca de renomear 'your_agent' com o nome
 # do seu agente.
 
 def disk_square_table(x,y):
-    return min(x+y, 7 - x+y, x + 7 - y, 7-x + 7-y)
+    return 14 - min(x+y, 7 - x+y, x + 7 - y, 7-x + 7-y)
 
 def utility(state_node, p_color):
-    acum = 0
     if state_node.get_board().is_terminal_state():
         num_self  = sum([1 for piece in str(state_node.get_board()) if piece==p_color])
         num_other = sum([1 for piece in str(state_node.get_board()) if piece==state_node.get_board().opponent(p_color)])
@@ -62,7 +60,7 @@ def utility(state_node, p_color):
             return -math.inf
         else:
             return 0
-
+    acum = 0
     for j in range(8):
         for i in range(8):
             p = str(state_node.get_board())[8*j+i]
@@ -91,7 +89,6 @@ def max_value(state_node, alpha, beta, depth):
             break
 
     state_node.set_cost(v)
-    print(id(state_node))
     return v
 
 
@@ -125,10 +122,10 @@ def make_move(the_board, color):
     :return: (int, int) tuple with x, y indexes of the move (remember: 0 is the first row/column)
     """
     root = Node(the_board, None, color)
-    print(id(root))
-    value = max_value(root, -math.inf, math.inf, 2)
-    # print(len(root.get_children()))
-    move = root.get_child_with_value(value).get_move()
-    # print(move)
-    return move
+    value = max_value(root, -math.inf, math.inf, 5)
+    child = root.get_child_with_value(value)
+    if not child:
+        return (-1,-1)
+    else:
+        return child.get_move()
 
