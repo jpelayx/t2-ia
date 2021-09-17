@@ -2,7 +2,7 @@ import random
 import sys
 import math
 
-sys.path.append('/home/leo/Documents/2021_1/IA/T2/t2-ia')  # i know this is a dirty hack but, you know, time...
+sys.path.append('..')  # i know this is a dirty hack but, you know, time...
 from board import *
 
 

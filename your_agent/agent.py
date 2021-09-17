@@ -3,7 +3,7 @@ import sys
 import math
 import time
 
-sys.path.append('/home/leo/Documents/2021_1/IA/T2/t2-ia')  # i know this is a dirty hack but, you know, time...
+sys.path.append('..')  # i know this is a dirty hack but, you know, time...
 from board import *
 
 
@@ -57,48 +57,60 @@ def game_stage(board):
         return 1 #mid game
     return 2     #late game
 
+
 def disk_square_table(x,y):
     return 14 - min(x+y, 7 - x+y, x + 7 - y, 7-x + 7-y)
 
+
+def mobility_strategy(state_node, is_min):
+    board = state_node.get_board()
+
+    self_moves = len(board.legal_moves(state_node.get_color()))
+    opp_moves = len(board.legal_moves(board.opponent(state_node.get_color())))
+    if self_moves == 0:
+        return 50 if is_min else -50
+    if opp_moves == 0:
+        return -50 if is_min else 50
+
+    ratio = self_moves/opp_moves
+    return 1/ratio if is_min else ratio
+
+
+def most_pieces_strategy(state_node, is_min):
+    num_self  = sum([1 for piece in str(state_node.get_board()) if piece==state_node.get_color()])
+    num_other = sum([1 for piece in str(state_node.get_board()) if piece==state_node.get_board().opponent(state_node.get_color())])
+    if num_self  == 0 :
+        return math.inf if is_min else -math.inf
+    if num_other == 0:
+        return  -math.inf if is_min else math.inf
+    else:
+        return num_other/num_self if is_min else num_self/num_other
+
+
+def evaluate_terminal_state(state_node, is_min):
+    num_self  = sum([1 for piece in str(state_node.get_board()) if piece==state_node.get_color()])
+    num_other = sum([1 for piece in str(state_node.get_board()) if piece==state_node.get_board().opponent(state_node.get_color())])
+    if num_self > num_other:
+        return -math.inf if is_min else  math.inf
+    if num_self < num_other:
+        return  math.inf if is_min else -math.inf
+    else:
+        return 0
+
+
 def utility(state_node, p_color, is_min):
     if state_node.get_board().is_terminal_state():
-        num_self  = sum([1 for piece in str(state_node.get_board()) if piece==p_color])
-        num_other = sum([1 for piece in str(state_node.get_board()) if piece==state_node.get_board().opponent(p_color)])
-        if num_self > num_other:
-            return -math.inf if is_min else  math.inf
-        if num_self < num_other:
-            return  math.inf if is_min else -math.inf
-        else:
-            return 0
+        evaluate_terminal_state(state_node, is_min)
 
     stage = game_stage(state_node.get_board())
-    board = state_node.get_board()
     
-    if stage == 0 or stage == 1:
-        self_moves = len(board.legal_moves(p_color))
-        opp_moves = len(board.legal_moves(board.opponent(p_color)))
-        if self_moves == 0:
-            return 50 if is_min else -50
-        if opp_moves == 0:
-            return -50 if is_min else 50
+    if stage == 0:
+        return most_pieces_strategy(state_node, is_min)
+    if stage == 1:
+        return mobility_strategy(state_node, is_min)
+    if stage == 2:
+        return most_pieces_strategy(state_node, is_min)    
 
-        ratio = self_moves/opp_moves
-        return 1/ratio if is_min else ratio
-    
-    num_self  = sum([1 for piece in str(state_node.get_board()) if piece==p_color])
-    num_other = sum([1 for piece in str(state_node.get_board()) if piece==state_node.get_board().opponent(p_color)])
-    
-    return (num_other/num_self) if is_min else (num_self/num_other)
-
-    # acum = 0
-    # for j in range(8):
-    #     for i in range(8):
-    #         p = str(state_node.get_board())[8*j+i]
-    #         if p_color == p:
-    #             acum += disk_square_table(i,j)
-    #         elif state_node.get_board().opponent(p_color) == p:
-    #             acum -= disk_square_table(i,j)
-    # return acum
 
 def max_value(state_node, alpha, beta, depth, start_time):
     board = state_node.get_board()
@@ -153,6 +165,7 @@ def min_value(state_node, alpha, beta, depth, start_time):
 
     state_node.set_cost(v)
     return v
+
 
 def make_move(the_board, color):
     """
