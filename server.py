@@ -142,6 +142,9 @@ class Server(object):
                 illegal_count[player] += 1
                 print('Player %d move %d,%d ILLEGAL!' % (player + 1,move_x, move_y))
 
+            print('Score:')
+            print(f'{self.player_dirs[0]} (B) -> {p1_score}')
+            print(f'{self.player_dirs[1]} (W) -> {p2_score}')
             print('Current board:')
             print(self.board.decorated_str())
 

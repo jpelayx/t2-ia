@@ -1,7 +1,6 @@
 import random
 import sys
 import math
-import time
 
 sys.path.append('/home/leo/Documents/2021_1/IA/T2/t2-ia')  # i know this is a dirty hack but, you know, time...
 from board import *
@@ -71,42 +70,21 @@ def utility(state_node, p_color, is_min):
         else:
             return 0
 
-    stage = game_stage(state_node.get_board())
-    board = state_node.get_board()
-    
-    if stage == 0 or stage == 1:
-        self_moves = len(board.legal_moves(p_color))
-        opp_moves = len(board.legal_moves(board.opponent(p_color)))
-        if self_moves == 0:
-            return 50 if is_min else -50
-        if opp_moves == 0:
-            return -50 if is_min else 50
+    acum = 0
+    for j in range(8):
+        for i in range(8):
+            p = str(state_node.get_board())[8*j+i]
+            if p_color == p:
+                acum += disk_square_table(i,j)
+            elif state_node.get_board().opponent(p_color) == p:
+                acum -= disk_square_table(i,j)
+    return acum
 
-        ratio = self_moves/opp_moves
-        return 1/ratio if is_min else ratio
-    
-    num_self  = sum([1 for piece in str(state_node.get_board()) if piece==p_color])
-    num_other = sum([1 for piece in str(state_node.get_board()) if piece==state_node.get_board().opponent(p_color)])
-    
-    return (num_other/num_self) if is_min else (num_self/num_other)
-
-    # acum = 0
-    # for j in range(8):
-    #     for i in range(8):
-    #         p = str(state_node.get_board())[8*j+i]
-    #         if p_color == p:
-    #             acum += disk_square_table(i,j)
-    #         elif state_node.get_board().opponent(p_color) == p:
-    #             acum -= disk_square_table(i,j)
-    # return acum
-
-def max_value(state_node, alpha, beta, depth, start_time):
+def max_value(state_node, alpha, beta, depth):
     board = state_node.get_board()
     color = state_node.get_color()
 
-    current_time = time.time()
-
-    if board.is_terminal_state() or depth == 0 or (current_time - start_time) > 4.9:
+    if board.is_terminal_state() or depth==0:
         u = utility(state_node, color, False)
         state_node.set_cost(u)
         return u
@@ -118,7 +96,7 @@ def max_value(state_node, alpha, beta, depth, start_time):
         new_board.process_move(s, color)
         child = Node(new_board, s, board.opponent(color))
         state_node.add_child(child)
-        v = max(v, min_value(child, alpha, beta, depth-1, start_time))
+        v = max(v, min_value(child, alpha, beta, depth-1))
         alpha = max(alpha, v)
         #print (v)
         if alpha >= beta:
@@ -128,13 +106,11 @@ def max_value(state_node, alpha, beta, depth, start_time):
     return v
 
 
-def min_value(state_node, alpha, beta, depth, start_time):
+def min_value(state_node, alpha, beta, depth):
     board = state_node.get_board()
     color = state_node.get_color()
 
-    current_time = time.time()
-
-    if board.is_terminal_state() or depth==0 or (current_time - start_time) > 4.9:
+    if board.is_terminal_state() or depth==0:
         u = utility(state_node, color, True)
         state_node.set_cost(u)
         return u
@@ -146,7 +122,7 @@ def min_value(state_node, alpha, beta, depth, start_time):
         new_board.process_move(s, color)
         child = Node(new_board, s, board.opponent(color))
         state_node.add_child(child)
-        v = min(v, max_value(child, alpha, beta, depth-1, start_time))
+        v = min(v, max_value(child, alpha, beta, depth-1))
         beta = min(beta, v)
         if beta >= alpha:
             break
@@ -162,7 +138,7 @@ def make_move(the_board, color):
     :return: (int, int) tuple with x, y indexes of the move (remember: 0 is the first row/column)
     """
     root = Node(the_board, None, color)
-    value = max_value(root, -math.inf, math.inf, 5, time.time())
+    value = max_value(root, -math.inf, math.inf, 4)
     child = root.get_child_with_value(value)
     if child is None:
         return (-1,-1)
