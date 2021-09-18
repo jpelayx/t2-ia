@@ -223,10 +223,15 @@ if __name__ == '__main__':
     victories = 0
     games = 0
     for _ in range(runs):
-        s = Server(p1, p2, args.delay, args.history, args.output)
+        if games%2:
+            s = Server(p1, p2, args.delay, args.history, args.output)
+        else:
+            s = Server(p2, p1, args.delay, args.history, args.output)
         s.run()
-        games += 1
-        if s.result == 0:
+        if s.result == 0 and games%2:
             victories += 1
+        if s.result == 1 and not games%2:
+            victories += 1
+        games += 1
         print("game " + str(games) + " out of " + str(runs) + "(" + str(victories) + " won)")
     print("WON " + str(victories/games) + "percent of matches")
