@@ -1,46 +1,25 @@
-# Servidor de Othello
+# [Nome do agente]
 
-Este arquivo contem instruções simples para execução do servidor e do jogador 'random'.
+## Grupo
 
-## Requisitos
-O servidor foi testado em uma máquina GNU/Linux (Ubuntu, mais precisamente) com
-o interpretador python 3.7.7
+| Nome                       | Matrícula | Turma |
+|----------------------------|-----------|-------|
+| Garrenlus de Souza         |  00315521 |     A |
+| Júlia Pelayo Rodirgues     |  00315868 |     A |
+| Leonardo Rodrigues Pedroso |  00265001 |     A | 
 
-## Instruções
+## Função de avaliação 
 
-Para iniciar uma partida de Othello, digite no terminal:
+Para a função de avaliação consideramos que o jogo tem 3 etapas: o ínicio (primeiras 20 jogadas), o meio (próximas 20 jogadas) e o final (demais jogadas até o fim). No ínicio e no final do jogo buscamos maximizar o número de peças do jogador e minimizar o número de peças do oponente (utilidade() = # peças do jogador/# peças do oponente), já no meio do jogo buscamos maximizar a mobilidade do jogador (utilidade() = # movimentos possiveis do jogador/# movimentos possíveis do oponente).
 
-python server.py [-h] [-d delay] [-l log-history] player1 player2
+## Estratégia de parada
 
-Onde 'player(1 ou 2)' são os diretórios onde estão os agent.py dos jogadores.
-Os argumentos entre colchetes são opcionais, seu significado é descrito a seguir:
+Usamos uma estratégia de profundidade fixa.
 
--h, --help            Mensagem de ajuda
--d delay, --delay delay
-                    Tempo alocado para os jogadores realizarem a jogada (default=5s)
--l log-history, --log-history log-history
-                    Arquivo que conterá registro simples de jogadas (default=history.txt)
--o output-file, --output-file output-file
-                    Arquivo que conterá detalhes do jogo (incluindo registro de jogadas)
+## Bibliografia 
 
-## Jogador random
-O jogador 'random' se localiza no diretório randomplayer. Para jogar uma partida com ele,
-basta substituir diretorio_player1 e/ou 2 por randomplayer. Como exemplo, inicie
-uma partida random vs. random para ver o servidor funcionando:
+- [1] Materiais da disciplina 
+- [2] D. E. Moriarty and R. Miikkulainen, “Discovering Complex Othello Strategies through Evolutionary Neural Networks,” Connection Sc., vol. 7, no. 3, pp. 195–210, Jan. 1995, doi: 10.1080/09540099550039228.
+- [3] “Computer Othello” Wikipedia. Jun. 12, 2021. Accessed: Sep. 22, 2021. [Online]. Available: https://en.wikipedia.org/w/index.php?title=Computer_Othello&oldid=1028246377
+- [4] B. Rose, Othello: A Minute to Learn... A Lifetime to Master. 
 
-python server.py randomplayer randomplayer
-
-Você verá o tabuleiro se preenchendo quase instantaneamente porque o jogador random é muito rápido (e muito incompetente).
-
-## Funcionamento
-
-Iniciando pelo player1, que jogará com as peças pretas, o servidor cria o objeto Board e chama o make_move do agent.py dentro do diretório do player 1.
-
-O make_move deve retornar as coordenadas x, y da jogada. O servidor as recebe, processa, e repete o procedimento para o próximo jogador, com o estado atualizado.
-
-# Notas
-* O servidor checa a legalidade das jogadas antes de efetivá-las. 
-* Você pode usar as funções da classe Board como auxílio para obter as jogadas válidas, além de outras facilidades.
-* Jogadas ilegais repetidas vezes resultam em desqualificação.
-* Timeout resulta em perda da vez (o que é uma desvantagem no jogo)
-* Em caso de problemas com o servidor, por favor avise via moodle ou discord.
