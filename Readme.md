@@ -14,7 +14,11 @@ Para a função de avaliação consideramos que o jogo tem 3 etapas: o ínicio (
 
 ## Estratégia de parada
 
-Usamos uma estratégia de profundidade fixa.
+Usamos uma estratégia de profundidade fixa e também há um teste de tempo para verificar se a escolha do movimento está próxima do tempo limite e então encerrar a busca. 
+
+## Dificuldades encontradas
+
+Após a implementação do teste do tempo restante de decisão houve uma tentativa de aumentar significativamente a profundidade máxima de busca, mas isto não apresentou resultados bons para o desempenho (este novo agente perdeu para o anterior). Houve também uma tentativa de implementar uma estratégia de parada com profundidade iterativa, mas devido às dificuldades de implementação encontradas, e como também não sabíamos se isto ia aumentar significativamente o desempenho do agente, julgamos desnecessário a implementação desta estratégia.
 
 ## Bibliografia 
 
