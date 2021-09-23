@@ -1,11 +1,11 @@
-# [Nome do agente]
+# Agente Iago 
 
 ## Grupo
 
 | Nome                       | Matrícula | Turma |
 |----------------------------|-----------|-------|
 | Garrenlus de Souza         |  00315521 |     A |
-| Júlia Pelayo Rodirgues     |  00315868 |     A |
+| Júlia Pelayo Rodrigues     |  00315868 |     A |
 | Leonardo Rodrigues Pedroso |  00265001 |     A | 
 
 ## Função de avaliação 
